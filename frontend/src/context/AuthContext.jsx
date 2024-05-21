@@ -1,5 +1,5 @@
-import { createContext, useCallback, useEffect, useState } from "react";
-import {postRequest} from "../utils/services";
+import { createContext, useCallback, useState } from "react";
+import { postRequest, getRequest } from "../utils/services";
 import { baseUrl } from "../utils/services";
 
 export const AuthContext = createContext();
@@ -9,7 +9,7 @@ export const AuthContextProvider = ({children}) => {
     const [registerError, setRegisterError] = useState(null);
     const [isRegisterLoading, setIsRegisterLoading] = useState(false);
     const [loginInfo, setLoginInfo] = useState({
-        email: "",
+        username: "",
         password: ""
     });
     const [loginError, setLoginError] = useState(null);
@@ -65,10 +65,35 @@ export const AuthContextProvider = ({children}) => {
         setUser(null);
     }, []);
 
+    const [friendInfo, setFriendInfo] = useState({
+        username1: "",
+        username2: ""
+    });
+    const [findFriendError, setFindFriendError] = useState(null);
+    const [isFriendLoading, setIsFriendLoading] = useState(false);
+
+    const updateFriendInfo = useCallback((info) => {
+        setFriendInfo(info);
+    }, []);
+
+    const findFriend = useCallback( async(e) => {
+        e.preventDefault();
+        setIsFriendLoading(true);
+        setFindFriendError(null);
+
+        console.log(friendInfo)
+
+        const response = await getRequest(`${baseUrl}/chat/`, JSON.stringify(friendInfo));
+
+        setIsFriendLoading(false);
+        if (response.error) return setFindFriendError(response);
+    }, [friendInfo])
+
     return <AuthContext.Provider value = {{user, 
                 registerInfo, updateRegisterInfo, registerUser, registerError, isRegisterLoading,
                 loginInfo, updateLoginInfo, loginError, loginUser, isLoginLoading,
-                logoutUser}} >
+                logoutUser,
+                friendInfo, updateFriendInfo, findFriend, isFriendLoading, findFriendError}} >
         {children}
     </AuthContext.Provider>
 };

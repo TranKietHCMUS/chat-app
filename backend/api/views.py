@@ -5,18 +5,35 @@ from rest_framework.decorators import APIView
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from .models import CustomUser, Message
+import jwt, datetime
 
 
 # Create your views here.
 class UserLogin(APIView):
     def post(self, request):
-        user = get_object_or_404(CustomUser, username=request.data['username'])
+        if 'username' not in request.data or 'password' not in request.data:
+            return Response({'detail': 'You must fill in username and password.'}, status=status.HTTP_400_BAD_REQUEST)
+        user = CustomUser.objects.filter(username=request.data['username']).first()
         
         if not user.check_password(request.data['password']):
             return Response({'detail':'Wrong Password.'}, status=status.HTTP_401_UNAUTHORIZED)
-        token, created = Token.objects.get_or_create(user=user)
         serializer = UserSerializer(instance=user)
-        return Response({'token': token.key, 'user': serializer.data}, status=status.HTTP_200_OK)
+
+        payload = {
+            'username': user.username,
+            'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=60),
+            'iat': datetime.datetime.utcnow()
+        }
+
+        token = jwt.encode(payload, 'secret', algorithm='HS256')
+
+        response = Response()
+        response.set_cookie(key='jwt', value=token, httponly=True)
+        response.data = {
+            'user': serializer.data
+        }
+
+        return response
 
 class UserRegister(APIView):
     def post(self, request):
@@ -26,10 +43,31 @@ class UserRegister(APIView):
             user = CustomUser.objects.get(username=request.data['username'])
             user.set_password(request.data['password'])
             user.save()
-            token = Token.objects.create(user=user)
-            return Response({'Token':token.key, 'user':serializer.data})
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+            return Response({'user':serializer.data})
+        for error in serializer.errors:
+            if serializer.errors[error][0] == "This field may not be blank.":
+                return Response({'detail': 'You must fill in all the infomation.'}, status=status.HTTP_400_BAD_REQUEST)
+        if 'email' in serializer.errors:
+            return Response({'detail' : serializer.errors['email'][0]}, status=status.HTTP_400_BAD_REQUEST)
+        if 'username' in serializer.errors:
+            return Response({'detail' : serializer.errors['username'][0]}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'detail' : str(serializer.errors)}, status=status.HTTP_400_BAD_REQUEST)
+
+class UserView(APIView):
+    def get(self, request):
+        token = request.COOKIES.get('jwt')
+
+        if not token:
+            return Response({'detail': 'Unauthenticated!'}, status=status.HTTP_401_UNAUTHORIZED)
+
+        try:
+            payload = jwt.decode(token, 'secret', algorithms=['HS256'])
+        except jwt.ExpiredSignatureError:
+            return Response({'detail': 'Unauthenticated!'}, status=status.HTTP_401_UNAUTHORIZED)
+
+        user = CustomUser.objects.filter(username=payload['username']).first()
+        serializer = UserSerializer(user)
+        return Response({'user': serializer.data}, status=status.HTTP_200_OK)
 
 class UserLogout(APIView):
     def post(self, request):
@@ -37,7 +75,7 @@ class UserLogout(APIView):
             request.user.auth_token.delete()
             return Response({'message': 'Successfully logged out.'}, status=status.HTTP_200_OK)
         except Exception as e:
-            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response({'detail': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class BoxChat(APIView):
     def post(self, request):
