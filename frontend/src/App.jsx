@@ -7,6 +7,7 @@ import {Container} from 'react-bootstrap';
 import NavBar from './components/NavBar';
 import { useContext } from 'react';
 import { AuthContext } from './context/AuthContext';
+import FriendPage from './pages/FriendPage';
 
 function App() {
   const {user} = useContext(AuthContext);
@@ -15,10 +16,10 @@ function App() {
       <NavBar />
       <Container >
         <Routes>
-          <Route path="/" element={user ? <ChatPage/> : <LoginPage />} />
-          <Route path="/register" element={user ? <ChatPage /> : <RegisterPage />}/>
-          <Route path="/login" element={user ? <ChatPage /> : <LoginPage />} />
-          <Route path="*"  element={<Navigate to="/" />}/>
+          <Route path="/friend" element={user ? <FriendPage/> : <LoginPage/>} />
+          <Route path="/register" element={ <RegisterPage />}/>
+          <Route path="/login" element={ user ? <FriendPage /> : <LoginPage />} />
+          <Route path="*"  element={<Navigate to="/friend" />}/>
         </Routes>
       </Container>
     </>
