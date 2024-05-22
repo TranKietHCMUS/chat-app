@@ -86,8 +86,8 @@ class BoxChat(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     def get(self, request):
         try:
-            user1 = request.data['username1']
-            user2 = request.data['username2']
+            user1 = request.query_params.get('username1')
+            user2 = request.query_params.get('username2')
 
             data1 = Message.objects.filter(username1=user1, username2=user2)
             data2 = Message.objects.filter(username1=user2, username2=user1)
