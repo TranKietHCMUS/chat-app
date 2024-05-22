@@ -19,6 +19,7 @@ function App() {
           <Route path="/friend" element={user ? <FriendPage/> : <LoginPage/>} />
           <Route path="/register" element={ <RegisterPage />}/>
           <Route path="/login" element={ user ? <FriendPage /> : <LoginPage />} />
+          <Route path="/friend/chat" element={user ? <ChatPage/> : <FriendPage/>} />
           <Route path="*"  element={<Navigate to="/friend" />}/>
         </Routes>
       </Container>

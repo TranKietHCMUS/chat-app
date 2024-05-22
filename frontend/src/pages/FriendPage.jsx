@@ -14,16 +14,13 @@ export default function FriendPage() {
     const {findFriend, updateFriendInfo, friendInfo, isFriendLoading, findFriendError} = useContext(AuthContext)
 
     return (
-        <Form onSubmit={findFriend}>
+        <Form onSubmit={findFriend} action='localhost:5173/friend/chat'>
             <Row style={{justifyContent:"center", paddingTop:"10%"}}>
                 <Col xs={4}>
                     <Stack gap={3}>
                         <h3 style={{color:"pink"}}>Enter username of your friend</h3>
-                        <Form.Control type="text" placeholder="Username1"
-                                    onChange={(e) => updateFriendInfo({...friendInfo, username1: e.target.value})}
-                        ></Form.Control>
-                        <Form.Control type="text" placeholder="Username2"
-                                    onChange={(e) => updateFriendInfo({...friendInfo, username2: e.target.value})}
+                        <Form.Control type="text" placeholder="Username"
+                                    onChange={(e) => updateFriendInfo({...friendInfo, friend_username: e.target.value})}
                         ></Form.Control>
                         <Button variant="primary" type="submit" 
                             style={{backgroundColor: buttonColor, border: buttonColor, color: cl, fontWeight: "bold"}}
