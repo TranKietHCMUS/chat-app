@@ -66,8 +66,7 @@ export const AuthContextProvider = ({children}) => {
     }, []);
 
     const [friendInfo, setFriendInfo] = useState({
-        username1: "",
-        username2: ""
+        friend_username: ""
     });
     const [findFriendError, setFindFriendError] = useState(null);
     const [isFriendLoading, setIsFriendLoading] = useState(false);
@@ -81,11 +80,10 @@ export const AuthContextProvider = ({children}) => {
         setIsFriendLoading(true);
         setFindFriendError(null);
 
-        console.log(friendInfo)
-
-        const response = await getRequest(`${baseUrl}/chat/`, JSON.stringify(friendInfo));
+        const response = await getRequest(`${baseUrl}/chat?username1=${user?.username}&username2=${friendInfo.friend_username}`);
 
         setIsFriendLoading(false);
+        console.log(response)
         if (response.error) return setFindFriendError(response);
     }, [friendInfo])
 
