@@ -4,8 +4,8 @@ from rest_framework.decorators import APIView
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from .models import CustomUser, Message
+from rest_framework_simplejwt.tokens import RefreshToken
 import jwt, datetime
-
 
 # Create your views here.
 class UserLogin(APIView):
@@ -37,6 +37,7 @@ class UserLogin(APIView):
         }
 
         return response
+
 
 class UserRegister(APIView):
     def post(self, request):
@@ -81,6 +82,15 @@ class UserLogout(APIView):
         }
         return response
 
+class FindUser(APIView):
+    def get(self, request):
+        try:
+            user  = CustomUser.objects.filter(username=request.query_params.get('username')).first()
+            serializer = CustomUser(instance=user)
+            return Response({'detail': 'ok'}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 class BoxChat(APIView):
     def post(self, request):
         serializer = MessageSerializer(data=request.data)
@@ -105,9 +115,8 @@ class BoxChat(APIView):
 
 class FindUserChats(APIView):
     def get(self, request):
-        name = request.query_params.get('username')
-
-        users = CustomUser.objects.exclude(username=name)
+    
+        users = CustomUser.objects.exclude(username=request.query_params.get('username'))
 
         serializer = UserSerializer(instance=users, many=True)
 
