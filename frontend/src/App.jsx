@@ -1,29 +1,28 @@
 import {Routes, Route, Navigate} from 'react-router-dom';
-import ChatPage from './pages/ChatPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import "bootstrap/dist/css/bootstrap.min.css";
 import {Container} from 'react-bootstrap';
 import NavBar from './components/NavBar';
-import { useContext } from 'react';
+import ChatPage from './pages/ChatPage';
 import { AuthContext } from './context/AuthContext';
-import FriendPage from './pages/FriendPage';
+import { useContext } from 'react';
+import { ChatContextProvider } from './context/ChatContext';
 
 function App() {
-  const {user} = useContext(AuthContext);
+  const {user} = useContext(AuthContext)
   return (
-    <>
+    <ChatContextProvider user={user}>
       <NavBar />
       <Container >
         <Routes>
-          <Route path="/friend" element={user ? <FriendPage/> : <LoginPage/>} />
-          <Route path="/register" element={ <RegisterPage />}/>
-          <Route path="/login" element={ user ? <FriendPage /> : <LoginPage />} />
-          <Route path="/friend/chat" element={user ? <ChatPage/> : <FriendPage/>} />
-          <Route path="*"  element={<Navigate to="/friend" />}/>
+          <Route path="/chat" element={user ? <ChatPage/> : <LoginPage />}/>
+          <Route path="/register" element={user ? <ChatPage/> : <RegisterPage />}/>
+          <Route path="/login" element={user ? <ChatPage/> : <LoginPage />}/>
+          <Route path="*" element={<Navigate to="/chat" />}/>
         </Routes>
       </Container>
-    </>
+    </ChatContextProvider>
   )
 }
 

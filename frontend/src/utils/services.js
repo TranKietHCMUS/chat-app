@@ -23,14 +23,14 @@ export const postRequest = async(url, body) => {
     return data;
 };
 
-export const getRequest = async (url, body) => {
+export const getRequest = async (url) => {
     const response = await fetch(url);
 
     const data = await response.json();
 
     if (!response.ok) {
         let message = "An error occured!";
-        if (data?.message) // check xem co message nao hay ko
+        if (data?.detail) // check xem co message nao hay ko
             message = data.detail;
         else
             message = data;
