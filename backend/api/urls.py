@@ -6,5 +6,6 @@ urlpatterns = [
     path('register/', views.UserRegister.as_view(), name='register'),
     path('logout/', views.UserLogout.as_view(), name='logout'),
     path('chat/', views.BoxChat.as_view(), name='box-chat'),
-    path('user/', views.UserView.as_view(), name='user')
+    path('user/', views.UserView.as_view(), name='user'),
+    path('finduserchats/', views.FindUserChats.as_view(), name='find-user-chats')
 ]
