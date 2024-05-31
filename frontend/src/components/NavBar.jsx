@@ -22,7 +22,7 @@ export default function NavigationBar() {
                     <Link to="/" className='text-decoration-none' style={{color:"pink"}}>Chat App</Link>
                 </h2>
                 {
-                    user && (<span className='text-warning'>Logged in as {user?.username}</span>)
+                    user && (<span className='text-warning'>Logged in as {user?.first_name} {user?.last_name}</span>)
                 }
                 {
                     !user && (<span className='text-warning'>Developed by TK</span>)
