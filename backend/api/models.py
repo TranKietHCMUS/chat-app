@@ -25,11 +25,6 @@ class UserManager(BaseUserManager):
         return self.create_user(email, password, **extra_fields)
 
 class CustomUser(AbstractUser):
-    GENDER_CHOICES = (
-        (1, 'male'),
-        (2, 'female'),
-        (3, 'other')
-    )
     email = models.EmailField(unique=True)
     username = models.CharField(max_length=30, unique=True)
     password = models.CharField(max_length=30, null=True)
@@ -39,7 +34,7 @@ class CustomUser(AbstractUser):
     birthday = models.DateField(null=True)
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     updated_at = models.DateTimeField(auto_now_add=True, null=True)
-    gender = models.SmallIntegerField(choices=GENDER_CHOICES, null=True)
+    gender = models.CharField(max_length=10, null=True)
     is_staff = models.BooleanField(default=False, null=True)
     is_superuser = models.BooleanField(default=False, null=True)
     is_active = models.BooleanField(default=False, null=True)

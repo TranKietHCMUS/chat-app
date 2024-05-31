@@ -1,11 +1,12 @@
 import { useContext } from "react";
-import { AuthContext } from "../context/AuthContext";
+import { ChatContext } from "../context/ChatContext";
 
 export default function ChatPage() {
-    const {user} = useContext(AuthContext);
+    const {userChats, isUserChatsLoading, userChatsError} = useContext(ChatContext)
+    console.log(userChats)
     return (
         <>
-            <span className='text-warning'>Logged in as {user?.username}</span>
+            Chat
         </>
     );
 };

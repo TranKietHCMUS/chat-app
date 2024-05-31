@@ -44,6 +44,16 @@ export default function RegisterPage() {
                                 updateRegisterInfo({...registerInfo, last_name: e.target.value})
                             }}
                         ></Form.Control>
+                        <datalist id="gd">
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Others">Others</option>
+                        </datalist>
+                        <Form.Control type="text" placeholder="Gender" list='gd'
+                            onChange={(e) => {
+                                updateRegisterInfo({...registerInfo, gender: e.target.value})
+                            }}
+                        ></Form.Control>
                         <Form.Control type="text" placeholder="Phone Number"
                             onChange={(e) => {
                                 updateRegisterInfo({...registerInfo, phone_number: e.target.value})

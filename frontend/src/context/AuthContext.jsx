@@ -1,4 +1,4 @@
-import { createContext, useCallback, useState } from "react";
+import { createContext, useCallback, useEffect, useState } from "react";
 import { postRequest, getRequest } from "../utils/services";
 import { baseUrl } from "../utils/services";
 
@@ -6,6 +6,13 @@ export const AuthContext = createContext();
 
 export const AuthContextProvider = ({children}) => {
     const [user, setUser] = useState(null);
+
+    useEffect(() => {
+        const user = localStorage.getItem("User")
+
+        setUser(JSON.parse(user))
+    }, [])
+
     const [registerError, setRegisterError] = useState(null);
     const [isRegisterLoading, setIsRegisterLoading] = useState(false);
     const [loginInfo, setLoginInfo] = useState({
@@ -20,6 +27,7 @@ export const AuthContextProvider = ({children}) => {
         password: "",
         first_name: "",
         last_name: "",
+        gender: "",
         phone_number: "",
         birthday: ""
     });
@@ -60,38 +68,16 @@ export const AuthContextProvider = ({children}) => {
         setUser(response['user']);
     }, [registerInfo]);
 
-    const logoutUser = useCallback(() => {
+    const logoutUser = useCallback( async(e) => {
         localStorage.removeItem("User");
         setUser(null);
+        const response = await getRequest(`${baseUrl}/logout/`)
     }, []);
-
-    const [friendInfo, setFriendInfo] = useState({
-        friend_username: ""
-    });
-    const [findFriendError, setFindFriendError] = useState(null);
-    const [isFriendLoading, setIsFriendLoading] = useState(false);
-
-    const updateFriendInfo = useCallback((info) => {
-        setFriendInfo(info);
-    }, []);
-
-    const findFriend = useCallback( async(e) => {
-        e.preventDefault();
-        setIsFriendLoading(true);
-        setFindFriendError(null);
-
-        const response = await getRequest(`${baseUrl}/chat?username1=${user?.username}&username2=${friendInfo.friend_username}`);
-
-        setIsFriendLoading(false);
-        console.log(response)
-        if (response.error) return setFindFriendError(response);
-    }, [friendInfo])
 
     return <AuthContext.Provider value = {{user, 
                 registerInfo, updateRegisterInfo, registerUser, registerError, isRegisterLoading,
                 loginInfo, updateLoginInfo, loginError, loginUser, isLoginLoading,
-                logoutUser,
-                friendInfo, updateFriendInfo, findFriend, isFriendLoading, findFriendError}} >
+                logoutUser}} >
         {children}
     </AuthContext.Provider>
 };
