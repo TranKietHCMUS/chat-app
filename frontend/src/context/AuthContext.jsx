@@ -1,6 +1,7 @@
 import { createContext, useCallback, useEffect, useState } from "react";
 import { postRequest, getRequest } from "../utils/services";
 import { baseUrl } from "../utils/services";
+import Cookies from 'js-cookie';
 
 export const AuthContext = createContext();
 
@@ -46,7 +47,9 @@ export const AuthContextProvider = ({children}) => {
         setIsLoginLoading(false);
         if (response.error) return setLoginError(response);
 
-        localStorage.setItem("User", JSON.stringify(response['user']));
+        // localStorage.setItem("User", JSON.stringify(response['user']));
+        Cookies.set('access_token', response['access_token'], {expires: 1/96})
+        Cookies.set('refresh_token', response['refresh_token'], {expires: 1})
         setUser(response['user']);
     }, [loginInfo])
 
@@ -69,7 +72,9 @@ export const AuthContextProvider = ({children}) => {
     }, [registerInfo]);
 
     const logoutUser = useCallback( async(e) => {
-        localStorage.removeItem("User");
+        // localStorage.removeItem("User");
+        Cookies.remove('access_token');
+        Cookies.remove('refresh_token');
         setUser(null);
         const response = await getRequest(`${baseUrl}/logout/`)
     }, []);
