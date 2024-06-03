@@ -47,9 +47,8 @@ export const AuthContextProvider = ({children}) => {
         setIsLoginLoading(false);
         if (response.error) return setLoginError(response);
 
-        // localStorage.setItem("User", JSON.stringify(response['user']));
-        Cookies.set('access_token', response['access_token'], {expires: 1/96})
-        Cookies.set('refresh_token', response['refresh_token'], {expires: 1})
+        localStorage.setItem("User", JSON.stringify(response['user']));
+        localStorage.setItem('token', response['token']);
         setUser(response['user']);
     }, [loginInfo])
 
@@ -72,9 +71,9 @@ export const AuthContextProvider = ({children}) => {
     }, [registerInfo]);
 
     const logoutUser = useCallback( async(e) => {
-        // localStorage.removeItem("User");
+        localStorage.removeItem("User");
+        localStorage.removeItem("token");
         Cookies.remove('access_token');
-        Cookies.remove('refresh_token');
         setUser(null);
         const response = await getRequest(`${baseUrl}/logout/`)
     }, []);

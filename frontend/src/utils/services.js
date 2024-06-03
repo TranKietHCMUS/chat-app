@@ -1,12 +1,13 @@
 export const baseUrl = "http://127.0.0.1:8000/api";
-import Cookies from 'js-cookie';
 
 export const postRequest = async(url, body) => {
     const response = await fetch(url, {
         method: "POST",
         headers: {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.token}` 
         },
+        credentials: "include",
         body
     });
     const data = await response.json();
@@ -25,10 +26,11 @@ export const postRequest = async(url, body) => {
 };
 
 export const getRequest = async (url) => {
-    console.log(Cookies.get())
     const response = await fetch(url, {
-        method: "GET",
         credentials: 'include',
+        headers: {
+            Authorization: `Bearer ${localStorage.token}` 
+        }
     });
 
     const data = await response.json();
