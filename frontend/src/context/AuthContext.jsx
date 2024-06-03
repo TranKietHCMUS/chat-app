@@ -1,6 +1,7 @@
 import { createContext, useCallback, useEffect, useState } from "react";
 import { postRequest, getRequest } from "../utils/services";
 import { baseUrl } from "../utils/services";
+import Cookies from 'js-cookie';
 
 export const AuthContext = createContext();
 
@@ -47,6 +48,7 @@ export const AuthContextProvider = ({children}) => {
         if (response.error) return setLoginError(response);
 
         localStorage.setItem("User", JSON.stringify(response['user']));
+        localStorage.setItem('token', response['token']);
         setUser(response['user']);
     }, [loginInfo])
 
@@ -70,6 +72,8 @@ export const AuthContextProvider = ({children}) => {
 
     const logoutUser = useCallback( async(e) => {
         localStorage.removeItem("User");
+        localStorage.removeItem("token");
+        Cookies.remove('access_token');
         setUser(null);
         const response = await getRequest(`${baseUrl}/logout/`)
     }, []);

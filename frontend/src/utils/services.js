@@ -5,7 +5,9 @@ export const postRequest = async(url, body) => {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.token}` 
         },
+        credentials: "include",
         body
     });
     const data = await response.json();
@@ -24,7 +26,12 @@ export const postRequest = async(url, body) => {
 };
 
 export const getRequest = async (url) => {
-    const response = await fetch(url);
+    const response = await fetch(url, {
+        credentials: 'include',
+        headers: {
+            Authorization: `Bearer ${localStorage.token}` 
+        }
+    });
 
     const data = await response.json();
 
