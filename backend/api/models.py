@@ -38,6 +38,7 @@ class CustomUser(AbstractUser):
     is_staff = models.BooleanField(default=False, null=True)
     is_superuser = models.BooleanField(default=False, null=True)
     is_active = models.BooleanField(default=False, null=True)
+    refresh_token = models.CharField(max_length=256, null=True)
 
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = ['email']
@@ -55,10 +56,3 @@ class Chat(models.Model):
 
     def __str__(self):
         return f"{self.user_id1.username} - {self.user_id2.username}"
-
-class Online(models.Model):
-    user_id = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='user_id')
-    refresh_token = models.CharField(max_length=256, null=True)
-
-    def __str__(self):
-        return f'{self.user_id.username} - refresh_token'
