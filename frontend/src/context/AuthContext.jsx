@@ -66,8 +66,6 @@ export const AuthContextProvider = ({children}) => {
         setIsRegisterLoading(false);
         if (response.error) return setRegisterError(response);
 
-        localStorage.setItem("User", JSON.stringify(response['user']));
-        setUser(response['user']);
     }, [registerInfo]);
 
     const logoutUser = useCallback( async(e) => {

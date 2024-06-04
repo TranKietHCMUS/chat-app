@@ -143,3 +143,5 @@ CORS_ALLOW_HEADERS = [
     'x-requested-with',
     'Cookie'
 ]
+
+ALLOWED_HOSTS = ['*']

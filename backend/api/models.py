@@ -47,11 +47,18 @@ class CustomUser(AbstractUser):
     def __str__(self):
         return self.email
     
-class Message(models.Model):
-    username1 = models.CharField(max_length=30)
-    username2 = models.CharField(max_length=30)
+class Chat(models.Model):
+    user_id1 = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='user1')
+    user_id2 = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='user2')
     text = models.CharField(max_length=500)
     time = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.username1 + " - " + self.username2
+        return f"{self.user_id1.username} - {self.user_id2.username}"
+
+class RefreshToken(models.Model):
+    user_id = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='user_id')
+    refresh_token = models.CharField(max_length=256, null=True)
+
+    def __str__(self):
+        return f'{self.user_id.username} - refresh_token'
