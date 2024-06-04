@@ -69,12 +69,16 @@ export const AuthContextProvider = ({children}) => {
     }, [registerInfo]);
 
     const logoutUser = useCallback( async(e) => {
+        const response = await getRequest(`${baseUrl}/logout?user_id=${user?.id}`);
+        if (response?.error) {
+            console.log(response?.error);
+            return;
+        }
         localStorage.removeItem("User");
         localStorage.removeItem("token");
         Cookies.remove('access_token');
         setUser(null);
-        const response = await getRequest(`${baseUrl}/logout/`)
-    }, []);
+    }, [user]);
 
     return <AuthContext.Provider value = {{user, 
                 registerInfo, updateRegisterInfo, registerUser, registerError, isRegisterLoading,
