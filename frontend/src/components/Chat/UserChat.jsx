@@ -1,7 +1,6 @@
 import { Stack } from "react-bootstrap";
 
 const UserChat = ({chat, user}) => {
-    console.log(chat)
     return (
         <Stack
             direction="horizontal"
@@ -13,7 +12,7 @@ const UserChat = ({chat, user}) => {
                         A
                 </div>
                 <div className="text-content">
-                    <div className="name">{chat}</div>
+                    <div className="name">{chat?.first_name + " " + chat?.last_name}</div>
                     <div className="text">Text Message</div>
                 </div>
                 <div className="d-flex flex-column align-items-end">
@@ -21,7 +20,7 @@ const UserChat = ({chat, user}) => {
                         01-01-2024
                     </div>
                     <div className="this-user-notifications">2</div>
-                    <span className="user-online"></span>
+                    {chat?.is_active == 1 && <span className="user-online"></span>}
                 </div>
             </div>
         </Stack>

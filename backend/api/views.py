@@ -174,8 +174,7 @@ class FindUserChats(APIView):
             
             users = CustomUser.objects.exclude(id=request.query_params.get('user_id'))
             serializer = UserSerializer(instance=users, many=True)
-            user_names = [user['first_name'] + " " + user['last_name'] for user in serializer.data]
-            return Response({'user_chats': user_names}, status=status.HTTP_200_OK)
+            return Response({'user_chats': serializer.data}, status=status.HTTP_200_OK)
         
         except jwt.ExpiredSignatureError:
             return Response({'detail':'Token has exprised!'}, status=status.HTTP_401_UNAUTHORIZED)
