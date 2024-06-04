@@ -21,8 +21,6 @@ export const ChatContextProvider = ({children, user}) => {
                 return setUserChatsError(response)
             }
 
-            console.log(response?.detail)
-
             setUserChats(response.user_chats)
         }
     }
