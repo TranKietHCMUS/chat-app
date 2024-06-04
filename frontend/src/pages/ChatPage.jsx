@@ -1,12 +1,17 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { ChatContext } from "../context/ChatContext";
 import { Container, Stack } from "react-bootstrap";
 import UserChat from "../components/Chat/UserChat";
 import { AuthContext } from "../context/AuthContext";
 
 export default function ChatPage() {
-    const {user} = useContext(AuthContext)
-    const {userChats, isUserChatsLoading, userChatsError} = useContext(ChatContext)
+    const {user} = useContext(AuthContext);
+    const {userChats, isUserChatsLoading, userChatsError, getUserChats} = useContext(ChatContext);
+
+    useEffect(() => {
+        getUserChats()
+    }, [user])
+
     return (
         <Container>
             {userChats?.length < 1 ? null : (
