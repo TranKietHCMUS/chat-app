@@ -8,4 +8,5 @@ urlpatterns = [
     path('finduser/', views.FindUser.as_view(), name='find-user'),
     path('chat/', views.BoxChat.as_view(), name='box-chat'),
     path('finduserchats/', views.FindUserChats.as_view(), name='find-user-chats'),
+    path('findonlineusers/', views.FindOnlineUsers.as_view(), name='find-online-users')
 ]
