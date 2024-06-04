@@ -1,10 +1,8 @@
 from rest_framework import status
-from .serializers import UserSerializer, MessageSerializer
+from .serializers import UserSerializer, ChatSerializer
 from rest_framework.decorators import APIView
 from rest_framework.response import Response
-from rest_framework.authtoken.models import Token
-from .models import CustomUser, Message
-from rest_framework_simplejwt.tokens import RefreshToken
+from .models import CustomUser, Chat
 import jwt, datetime
 from django.core.cache import cache
 
@@ -27,7 +25,7 @@ class UserLogin(APIView):
         serializer = UserSerializer(instance=user)
 
         access_payload = {
-            'username': user.username,
+            'user_id': user.id,
             'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=15),
             'iat': datetime.datetime.utcnow()
         }
@@ -35,7 +33,7 @@ class UserLogin(APIView):
         access_token = jwt.encode(access_payload, secret_key, algorithm='HS256')
 
         refresh_payload = {
-            'username': user.username,
+            'user_id': user.id,
             'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=1440),
             'iat': datetime.datetime.utcnow()
         }
@@ -84,8 +82,8 @@ class FindUser(APIView):
         try:
             token = request.headers['Authorization'][7:]
             payload = jwt.decode(token, secret_key, algorithms=['HS256']) 
-            if "username" not in payload:
-                return Response({'detail':'Token không hợp lệ'}, status=status.HTTP_401_UNAUTHORIZED)
+            if "user_id" not in payload:
+                return Response({'detail':'Token is not valid!'}, status=status.HTTP_401_UNAUTHORIZED)
             
             try:
                 user  = CustomUser.objects.filter(username=request.query_params.get('username')).first()
@@ -95,54 +93,54 @@ class FindUser(APIView):
                 return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
         except jwt.ExpiredSignatureError:
-            return Response({'detail':'Token đã hết hạn'}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response({'detail':'Token has exprised!'}, status=status.HTTP_401_UNAUTHORIZED)
         except jwt.InvalidTokenError:
-            return Response({'detail':'Token không hợp lệ'}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response({'detail':'Token is not valid!'}, status=status.HTTP_401_UNAUTHORIZED)
 
 class BoxChat(APIView):
     def post(self, request):
         try:
             token = request.headers['Authorization'][7:]
             payload = jwt.decode(token, secret_key, algorithms=['HS256']) 
-            if "username" not in payload:
-                return Response({'detail':'Token không hợp lệ'}, status=status.HTTP_401_UNAUTHORIZED)
+            if "user_id" not in payload:
+                return Response({'detail':'Token is not valid!'}, status=status.HTTP_401_UNAUTHORIZED)
             
-            serializer = MessageSerializer(data=request.data)
+            serializer = ChatSerializer(data=request.data)
             if serializer.is_valid():
                 serializer.save()
-                return Response({'message': 'successfully', 'data': serializer.data}, status=status.HTTP_201_CREATED)
+                return Response({'Chat': 'successfully', 'data': serializer.data}, status=status.HTTP_201_CREATED)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
         except jwt.ExpiredSignatureError:
-            return Response({'detail':'Token đã hết hạn'}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response({'detail':'Token has exprised!'}, status=status.HTTP_401_UNAUTHORIZED)
         except jwt.InvalidTokenError:
-            return Response({'detail':'Token không hợp lệ'}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response({'detail':'Token is not valid!'}, status=status.HTTP_401_UNAUTHORIZED)
         
     def get(self, request):
         try:
             token = request.headers['Authorization'][7:]
             payload = jwt.decode(token, secret_key, algorithms=['HS256']) 
-            if "username" not in payload:
-                return Response({'detail':'Token không hợp lệ'}, status=status.HTTP_401_UNAUTHORIZED)
+            if "user_id" not in payload:
+                return Response({'detail':'Token is not valid!'}, status=status.HTTP_401_UNAUTHORIZED)
             
             try:
-                user1 = request.query_params.get('username1')
-                user2 = request.query_params.get('username2')
+                user1 = request.query_params.get('user_id1')
+                user2 = request.query_params.get('user_id2')
 
-                data1 = Message.objects.filter(username1=user1, username2=user2)
-                data2 = Message.objects.filter(username1=user2, username2=user1)
+                data1 = Chat.objects.filter(user_id1=user1, user_id2=user2)
+                data2 = Chat.objects.filter(user_id1=user2, user_id2=user1)
 
-                serializer1 = MessageSerializer(instance=data1, many=True)
-                serializer2 = MessageSerializer(instance=data2, many=True)
+                serializer1 = ChatSerializer(instance=data1, many=True)
+                serializer2 = ChatSerializer(instance=data2, many=True)
 
                 return Response({'data1': serializer1.data, 'data2': serializer2.data}, status=status.HTTP_200_OK)
             except Exception as e:
                 return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             
         except jwt.ExpiredSignatureError:
-            return Response({'detail':'Token đã hết hạn'}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response({'detail':'Token has exprised!'}, status=status.HTTP_401_UNAUTHORIZED)
         except jwt.InvalidTokenError:
-            return Response({'detail':'Token không hợp lệ'}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response({'detail':'Token is not valid!'}, status=status.HTTP_401_UNAUTHORIZED)
 
 
 class FindUserChats(APIView):
@@ -150,15 +148,15 @@ class FindUserChats(APIView):
         try:
             token = request.headers['Authorization'][7:]
             payload = jwt.decode(token, secret_key, algorithms=['HS256']) 
-            if "username" not in payload:
-                return Response({'detail':'Token không hợp lệ'}, status=status.HTTP_401_UNAUTHORIZED)
+            if "user_id" not in payload:
+                return Response({'detail':'Token is not valid!'}, status=status.HTTP_401_UNAUTHORIZED)
             
-            users = CustomUser.objects.exclude(username=request.query_params.get('username'))
+            users = CustomUser.objects.exclude(id=request.query_params.get('user_id'))
             serializer = UserSerializer(instance=users, many=True)
             user_names = [user['first_name'] + " " + user['last_name'] for user in serializer.data]
             return Response({'user_chats': user_names}, status=status.HTTP_200_OK)
         
         except jwt.ExpiredSignatureError:
-            return Response({'detail':'Token đã hết hạn'}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response({'detail':'Token has exprised!'}, status=status.HTTP_401_UNAUTHORIZED)
         except jwt.InvalidTokenError:
-            return Response({'detail':'Token không hợp lệ'}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response({'detail':'Token is not valid!'}, status=status.HTTP_401_UNAUTHORIZED)

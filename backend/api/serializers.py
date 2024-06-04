@@ -1,12 +1,12 @@
 from rest_framework import serializers
-from .models import CustomUser, Message
+from .models import CustomUser, Chat
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ['email', 'username', 'password', 'first_name', 'last_name', 'gender', 'phone_number', 'birthday']
+        fields = ['id', 'email', 'username', 'password', 'first_name', 'last_name', 'gender', 'phone_number', 'birthday']
 
-class MessageSerializer(serializers.ModelSerializer):
+class ChatSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Message
-        fields = ['username1', 'username2', 'text', 'time']
+        model = Chat
+        fields = ['id', 'userid1', 'userid2', 'text', 'time']
