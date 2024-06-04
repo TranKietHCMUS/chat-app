@@ -1,10 +1,9 @@
 from rest_framework import status
-from .serializers import UserSerializer, ChatSerializer
+from .serializers import UserSerializer, ChatSerializer, OnlineSerializer
 from rest_framework.decorators import APIView
 from rest_framework.response import Response
-from .models import CustomUser, Chat
+from .models import CustomUser, Chat, Online
 import jwt, datetime
-from django.core.cache import cache
 
 fps = open("./api/secret_key.txt", "r")
 secret_key = fps.read()
@@ -24,6 +23,11 @@ class UserLogin(APIView):
         
         serializer = UserSerializer(instance=user)
 
+        check_online = Online.objects.filter(user_id=serializer.data['id']).first()
+        
+        if (check_online):
+            return Response({'detail':'This account is being logged in elsewhere.'}, status=status.HTTP_401_UNAUTHORIZED)
+
         access_payload = {
             'user_id': user.id,
             'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=15),
@@ -38,7 +42,15 @@ class UserLogin(APIView):
             'iat': datetime.datetime.utcnow()
         }
 
-        refresh_token = jwt.encode(refresh_payload, secret_key, algorithm='HS256')
+        _refresh_token = jwt.encode(refresh_payload, secret_key, algorithm='HS256')
+
+        online_user_data = {
+            'user_id': serializer.data['id'],
+            'refesh_token': _refresh_token
+        }
+        online_user_serializer = OnlineSerializer(data=online_user_data)
+        if (online_user_serializer.is_valid()):
+            online_user_serializer.save()
 
         response = Response()
         response.set_cookie(key='access_token', value=access_token, httponly=True, max_age=900)
@@ -58,7 +70,9 @@ class UserRegister(APIView):
             user = CustomUser.objects.get(username=request.data['username'])
             user.set_password(request.data['password'])
             user.save()
+
             return Response({'user':serializer.data})
+
         for error in serializer.errors:
             if serializer.errors[error][0] == "This field may not be blank.":
                 return Response({'detail': 'You must fill in all the infomation.'}, status=status.HTTP_400_BAD_REQUEST)
@@ -70,12 +84,20 @@ class UserRegister(APIView):
 
 class UserLogout(APIView):
     def get(self, request):
-        response = Response()
-        response.delete_cookie('access_token')
-        response.data = {
-            'detail': 'success'
-        }
-        return response
+        try:
+            response = Response()
+            response.delete_cookie('access_token')
+
+            online_user = Online.objects.filter(user_id=request.query_params.get('user_id')).first()
+            online_user.delete()
+
+            response.data = {
+                'detail': 'success'
+            }
+
+            return response
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 class FindUser(APIView):
     def get(self, request):

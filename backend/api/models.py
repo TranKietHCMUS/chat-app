@@ -56,7 +56,7 @@ class Chat(models.Model):
     def __str__(self):
         return f"{self.user_id1.username} - {self.user_id2.username}"
 
-class RefreshToken(models.Model):
+class Online(models.Model):
     user_id = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='user_id')
     refresh_token = models.CharField(max_length=256, null=True)
 
