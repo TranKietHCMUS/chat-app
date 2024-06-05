@@ -9,7 +9,7 @@ const UserChat = ({chat, user}) => {
         >
             <div className="d-flex">
                 <div className="me-2">
-                        A
+                        
                 </div>
                 <div className="text-content">
                     <div className="name">{chat?.first_name + " " + chat?.last_name}</div>
