@@ -38,7 +38,7 @@ class UserLogin(APIView):
         user.save()
 
         response = Response()
-        response.set_cookie(key='refreshToken', value=rf_token, httponly=True, secure=False, path='/', samesite='strict')
+        response.set_cookie(key='refreshToken', value=rf_token, httponly=True, path='/', samesite='strict', secure=False)
 
         serializer = UserSerializer(instance=user)
 
@@ -147,6 +147,7 @@ class FindUserChats(APIView):
 
 class RefreshToken(APIView):
     def get(self, request):
+        print(request.COOKIES)
         if ('refreshToken' not in request.COOKIES):
             return Response({'detail':'You\'re not authenticated!'}, status=status.HTTP_401_UNAUTHORIZED)
         try:

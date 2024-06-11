@@ -1,5 +1,5 @@
 import { createContext, useCallback, useEffect, useState } from "react";
-import { postRequest, getRequest } from "../utils/services";
+import { postRequest, getRequest, postLoginOrRegister } from "../utils/services";
 import { baseUrl } from "../utils/services";
 import Cookies from 'js-cookie';
 
@@ -10,7 +10,6 @@ export const AuthContextProvider = ({children}) => {
 
     useEffect(() => {
         const user = localStorage.getItem("User")
-
         setUser(JSON.parse(user))
     }, [])
 
@@ -38,17 +37,17 @@ export const AuthContextProvider = ({children}) => {
     }, []);
 
     const loginUser = useCallback( async(e) => {
-        e.preventDefault();
+        e.preventDefault(); // khi ham nay dc goi thi trang web ko duoc load lai, van dung yen
         setIsLoginLoading(true);
         setLoginError(null);
 
-        const response = await postRequest(`${baseUrl}/login/`, JSON.stringify(loginInfo));
+        const response = await postLoginOrRegister(`${baseUrl}/auth/login/`, JSON.stringify(loginInfo));
 
         setIsLoginLoading(false);
         if (response.error) return setLoginError(response);
 
         localStorage.setItem("User", JSON.stringify(response['user']));
-        localStorage.setItem('token', response['token']);
+        localStorage.setItem('token', response['accessToken']);
         setUser(response['user']);
     }, [loginInfo])
 
@@ -61,7 +60,7 @@ export const AuthContextProvider = ({children}) => {
         setIsRegisterLoading(true);
         setRegisterError(null);
 
-        const response = await postRequest(`${baseUrl}/register/`, JSON.stringify(registerInfo));
+        const response = await postLoginOrRegister(`${baseUrl}/auth/register/`, JSON.stringify(registerInfo));
 
         setIsRegisterLoading(false);
         if (response.error) return setRegisterError(response);
@@ -69,14 +68,13 @@ export const AuthContextProvider = ({children}) => {
     }, [registerInfo]);
 
     const logoutUser = useCallback( async(e) => {
-        const response = await getRequest(`${baseUrl}/logout?user_id=${user?.id}`);
+        const response = await getRequest(`${baseUrl}/auth/logout?user_id=${user?.id}`);
         if (response?.error) {
             console.log(response?.error);
             return;
         }
         localStorage.removeItem("User");
         localStorage.removeItem("token");
-        Cookies.remove('access_token');
         setUser(null);
     }, [user]);
 
