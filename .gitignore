@@ -2,4 +2,5 @@ db.sqlite3
 node_modules
 __pycache__
 migrations
-backend/api/secret_key.txt
+backend/access_key.txt
+backend/refresh_key.txt
