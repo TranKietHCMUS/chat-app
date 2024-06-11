@@ -13,7 +13,7 @@ def generateAccessToken(user):
     access_payload = {
         'user_id': user.id,
         'is_superuser': user.is_superuser,
-        'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=5),
+        'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=1),
         'iat': datetime.datetime.utcnow()
     }
 
