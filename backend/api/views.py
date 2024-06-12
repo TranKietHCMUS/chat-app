@@ -72,9 +72,9 @@ class UserRegister(APIView):
 
 class UserLogout(APIView):
     def get(self, request):
-        res = checkToken(request)
-        if (res != 1):
-            return res    
+        # res = checkToken(request)
+        # if (res != 1):
+        #     return res    
         try:
             response = Response()
 
@@ -157,7 +157,7 @@ class RefreshToken(APIView):
             user = CustomUser.objects.filter(id=payload['user_id']).first()
 
             if (refreshToken != user.refresh_token):
-                return Response({'detail':'Token is not valid!'}, status=status.HTTP_401_UNAUTHORIZED)
+                return Response({'detail':'You\'re not authenticated!'}, status=status.HTTP_401_UNAUTHORIZED)
 
             newAccessToken = generateAccessToken(user)
             newRefreshToken = generateRefreshToken(user)
@@ -173,8 +173,10 @@ class RefreshToken(APIView):
             return response
 
         except jwt.ExpiredSignatureError:
-            return Response({'detail':'Token has exprised!'}, status=status.HTTP_401_UNAUTHORIZED)
+            res = Response({'detail':'Token is expired!'}, status=status.HTTP_401_UNAUTHORIZED)
+            res.delete_cookie('refreshToken')
+            return res
         except jwt.InvalidTokenError:
-            return Response({'detail':'Token is not valid!'}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response({'detail':'You\'re not authenticated!'}, status=status.HTTP_401_UNAUTHORIZED)
 
         
