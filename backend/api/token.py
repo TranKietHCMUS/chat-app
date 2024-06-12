@@ -13,7 +13,7 @@ def generateAccessToken(user):
     access_payload = {
         'user_id': user.id,
         'is_superuser': user.is_superuser,
-        'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=1),
+        'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=0.5),
         'iat': datetime.datetime.utcnow()
     }
 
@@ -25,7 +25,7 @@ def generateRefreshToken(user):
     refresh_payload = {
         'user_id': user.id,
         'is_superuser': user.is_superuser,
-        'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=86400),
+        'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=1),
         'iat': datetime.datetime.utcnow()
     }
 
