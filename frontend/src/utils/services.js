@@ -34,6 +34,14 @@ export const postRequest = async(url, body) => {
             credentials: 'include'
         })
         const data = await res.json();
+        if (data?.detail) {
+            if (data.detail === 'Token is expired!') {
+                await fetch (`${baseUrl}/auth/logout/?user_id=${decodedToken.user_id}`);
+                localStorage.removeItem('User');
+                localStorage.removeItem('token');
+                window.location.replace("/login");
+            }
+        }
         if (data?.accessToken)
             localStorage.setItem('token', data.accessToken);
     };
@@ -58,7 +66,6 @@ export const postRequest = async(url, body) => {
 
         return { error: true, message };
     }
-
     return data;
 };
 
@@ -71,6 +78,14 @@ export const getRequest = async (url) => {
         })
     
         const data = await res.json();
+        if (data?.detail) {
+            if (data.detail === 'Token is expired!') {
+                await fetch (`${baseUrl}/auth/logout/?user_id=${decodedToken.user_id}`);
+                localStorage.removeItem('User');
+                localStorage.removeItem('token');
+                window.location.replace("/login");
+            }
+        }
         if (data?.accessToken)
             localStorage.setItem('token', data.accessToken);
     };
@@ -81,7 +96,6 @@ export const getRequest = async (url) => {
             "Token": `Bearer ${localStorage.token}` 
         }
     });
-
     const data = await response.json();
 
     if (!response.ok) {
@@ -93,6 +107,5 @@ export const getRequest = async (url) => {
 
         return { error: true, message };
     }
-
     return data;
 }
