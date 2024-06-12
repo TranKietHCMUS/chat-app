@@ -38,7 +38,8 @@ class UserLogin(APIView):
         user.save()
 
         response = Response()
-        response.set_cookie(key='refreshToken', value=rf_token, httponly=True, path='/', samesite='strict', secure=False)
+        response.set_cookie(key='refreshToken', value=rf_token, httponly=True, path='/', 
+                            samesite=None, secure=False)
 
         serializer = UserSerializer(instance=user)
 
@@ -71,9 +72,9 @@ class UserRegister(APIView):
 
 class UserLogout(APIView):
     def get(self, request):
-        # res = checkToken(request)
-        # if (res != 1):
-        #     return res    
+        res = checkToken(request)
+        if (res != 1):
+            return res    
         try:
             response = Response()
 
@@ -147,7 +148,6 @@ class FindUserChats(APIView):
 
 class RefreshToken(APIView):
     def get(self, request):
-        print(request.COOKIES)
         if ('refreshToken' not in request.COOKIES):
             return Response({'detail':'You\'re not authenticated!'}, status=status.HTTP_401_UNAUTHORIZED)
         try:
@@ -166,13 +166,11 @@ class RefreshToken(APIView):
             user.save()
 
             response = Response()
-            response.set_cookie(key='refreshToken', value=newRefreshToken, httponly=True, secure=False, path='/', samesite='strict')
+            response.set_cookie(key='refreshToken', value=newRefreshToken, httponly=True, secure=False, path='/', samesite=None)
             response.data = {
                 'accessToken': newAccessToken
             }
-
             return response
-
 
         except jwt.ExpiredSignatureError:
             return Response({'detail':'Token has exprised!'}, status=status.HTTP_401_UNAUTHORIZED)
