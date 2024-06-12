@@ -1,7 +1,7 @@
 import {jwtDecode} from "jwt-decode"
 
-export const baseUrl = "http://127.0.0.1:8000/api";
-export const refreshUrl = "http://127.0.0.1:8000/api/token/refresh/";
+export const baseUrl = 'http://127.0.0.1:8000/api';
+export const refreshUrl = 'http://127.0.0.1:8000/api/token/refresh/';
 
 export const postLoginOrRegister = async (url, body) => {
     const response = await fetch(url, {
@@ -30,22 +30,12 @@ export const postRequest = async(url, body) => {
     let date = new Date();
     const decodedToken = jwtDecode(localStorage.token);
     if (decodedToken.exp < date.getTime() / 1000) {
-        const res = await axios.get(refreshUrl, {
-            withCredentials: true,
+        const res = await fetch(refreshUrl, {
+            credentials: 'include'
         })
-
-        if (!res.ok) {
-            let message;
-            if (data?.detail)
-                message = data.detail;
-            else
-                message = data;
-    
-            return { error: true, message };
-        }
-
-        localStorage.removeItem('token');
-        localStorage.setItem('token', res['accessToken']);
+        const data = await res.json();
+        if (data?.accessToken)
+            localStorage.setItem('token', data.accessToken);
     };
 
     const response = await fetch(url, {
@@ -79,19 +69,10 @@ export const getRequest = async (url) => {
         const res = await fetch(refreshUrl, {
             credentials: 'include'
         })
-
-        localStorage.removeItem('token');
-        localStorage.setItem('token', res['accessToken']);
-
-        if (!res.ok) {
-            let message;
-            if (data?.detail)
-                message = data.detail;
-            else
-                message = data;
     
-            return { error: true, message };
-        }
+        const data = await res.json();
+        if (data?.accessToken)
+            localStorage.setItem('token', data.accessToken);
     };
 
     const response = await fetch(url, {

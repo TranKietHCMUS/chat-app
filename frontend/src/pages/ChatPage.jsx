@@ -4,6 +4,7 @@ import { Container, Stack } from "react-bootstrap";
 import UserChat from "../components/Chat/UserChat";
 import { AuthContext } from "../context/AuthContext";
 
+
 export default function ChatPage() {
     const {user} = useContext(AuthContext);
     const {userChats, isUserChatsLoading, userChatsError, getUserChats} = useContext(ChatContext);
@@ -28,6 +29,6 @@ export default function ChatPage() {
                 </Stack>
                 <p>Chat Box</p>
             </Stack>)}
-        </Container>
+        </Container>    
     );
 };
