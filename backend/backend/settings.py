@@ -144,3 +144,5 @@ CORS_ALLOW_HEADERS = [
     'x-requested-with',
     'Token'
 ]
+
+ALLOWED_HOSTS = ['*']

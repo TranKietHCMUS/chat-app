@@ -26,7 +26,6 @@ class UserLogin(APIView):
             return Response({'detail':'Wrong Password.'}, status=status.HTTP_401_UNAUTHORIZED)
 
         check_online = (user.is_active == 1)
-        
         if (check_online):
             return Response({'detail':'This account is being logged in elsewhere.'}, status=status.HTTP_401_UNAUTHORIZED)
 
@@ -37,7 +36,7 @@ class UserLogin(APIView):
         user.refresh_token = rf_token
         user.save()
 
-        response = Response()
+        response = Response({'detail': 'success!'}, status=status.HTTP_200_OK)
         response.set_cookie(key='refreshToken', value=rf_token, httponly=True, path='/', 
                             samesite=None, secure=False)
 
@@ -71,10 +70,7 @@ class UserRegister(APIView):
         return Response({'detail' : str(serializer.errors)}, status=status.HTTP_400_BAD_REQUEST)
 
 class UserLogout(APIView):
-    def get(self, request):
-        # res = checkToken(request)
-        # if (res != 1):
-        #     return res    
+    def get(self, request):  
         try:
             response = Response()
 
@@ -120,7 +116,6 @@ class BoxChat(APIView):
         res = checkToken(request)
         if (res != 1):
             return res
-            
         try:
             user1 = request.query_params.get('user_id1')
             user2 = request.query_params.get('user_id2')
