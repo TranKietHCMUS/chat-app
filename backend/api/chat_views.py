@@ -1,3 +1,4 @@
+from django.db.models import Q
 from rest_framework import status
 from .serializers import UserSerializer, ChatSerializer
 from rest_framework.decorators import APIView
@@ -10,7 +11,7 @@ class Messages(APIView):
         res = checkToken(request)
         if (res != 1):
             return res
-            
+        
         serializer = ChatSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -25,13 +26,11 @@ class Messages(APIView):
             user1 = request.query_params.get('user_id1')
             user2 = request.query_params.get('user_id2')
 
-            data1 = Chat.objects.filter(user_id1=user1, user_id2=user2)
-            data2 = Chat.objects.filter(user_id1=user2, user_id2=user1)
+            data = Chat.objects.filter((Q(user_id1=user1) & Q(user_id2=user2)) | (Q(user_id1=user2) & Q(user_id2=user1))).order_by('time')
 
-            serializer1 = ChatSerializer(instance=data1, many=True)
-            serializer2 = ChatSerializer(instance=data2, many=True)
+            serializer = ChatSerializer(instance=data, many=True)
 
-            return Response({'send': serializer1.data, 'receive': serializer2.data}, status=status.HTTP_200_OK)
+            return Response({'data': serializer.data}, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
