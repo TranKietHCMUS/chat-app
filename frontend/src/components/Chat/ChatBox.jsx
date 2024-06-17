@@ -14,6 +14,12 @@ const ChatBox = () => {
         getMessages();
     }, [currentChat]);
 
+    function handleKeyPress(event) {
+        if (event.key === 'Enter') {
+            sendTextMessage(textMessage, setTextMessage);
+        }
+      }
+
     if (!currentChat?.id)
         return (
             <p style={{textAlign:"center", width:"100%"}}>Let's Chat</p>
@@ -42,6 +48,7 @@ const ChatBox = () => {
                     onChange={setTextMessage} 
                     fontFamily="nunito" 
                     borderColor="rbga(72, 112, 223, 0.2)" 
+                    onKeyDown={handleKeyPress}
                 ></InputEmoji>
                 <button className="send-btn" onClick={() => sendTextMessage(textMessage, setTextMessage)}>
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-send-fill" viewBox="0 0 16 16">
