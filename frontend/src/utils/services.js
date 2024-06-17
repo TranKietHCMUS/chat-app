@@ -1,7 +1,7 @@
 import {jwtDecode} from "jwt-decode"
 
 export const baseUrl = 'http://127.0.0.1:8000/api';
-export const refreshUrl = 'http://127.0.0.1:8000/api/token/refresh/';
+export const refreshUrl = 'http://127.0.0.1:8000/api/user/refresh/';
 
 export const postLoginOrRegister = async (url, body) => {
     const response = await fetch(url, {
