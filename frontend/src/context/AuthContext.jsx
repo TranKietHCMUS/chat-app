@@ -1,7 +1,6 @@
 import { createContext, useCallback, useEffect, useState } from "react";
 import { postRequest, getRequest, postLoginOrRegister } from "../utils/services";
 import { baseUrl } from "../utils/services";
-import Cookies from 'js-cookie';
 
 export const AuthContext = createContext();
 

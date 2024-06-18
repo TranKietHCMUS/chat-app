@@ -1,8 +1,11 @@
 import { Stack } from "react-bootstrap";
 import male from "../../assets/male.svg"
 import female from "../../assets/female.svg"
+import { useContext } from "react";
+import { ChatContext } from "../../context/ChatContext";
 
 const UserChat = ({chat, user}) => {
+    const {onlineUsers} = useContext(ChatContext);
     return (
         <Stack
             direction="horizontal"
@@ -23,7 +26,7 @@ const UserChat = ({chat, user}) => {
                         01-01-2024
                     </div>
                     <div className="this-user-notifications">2</div>
-                    {chat?.is_active == 1 && <span className="user-online"></span>}
+                    {onlineUsers?.some((u) => u?.userId === chat?.id) && <span className="user-online"></span>}
                 </div>
             </div>
         </Stack>
