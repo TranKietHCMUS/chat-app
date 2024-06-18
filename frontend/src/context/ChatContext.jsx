@@ -1,5 +1,6 @@
 import { createContext, useCallback, useEffect, useState } from "react";
 import { baseUrl, getRequest, postRequest } from "../utils/services";
+import { io } from "socket.io-client"
 
 export const ChatContext = createContext();
 
@@ -12,6 +13,43 @@ export const ChatContextProvider = ({children, user}) => {
     const [isMessagesLoading, setIsMessagesLoading] = useState(false);
     const [messagesError, setMessagesError] = useState(null);
     const [sendTextMessageError, setSendTextMessageError] = useState(null);
+    const [socket, setSocket] = useState(null);
+    const [onlineUsers, setOnlineUsers] = useState([]);
+
+    // connect
+    useEffect(() => {
+        if (!user) return;
+        const newSocket = io("http://127.0.0.1:3000");
+        setSocket(newSocket);
+
+        return () => {
+            newSocket.disconnect();
+        }
+    }, [user]);
+
+    // add online user
+    useEffect(() => {
+        if (socket === null) return;
+        socket.emit("addNewUser", user?.id);
+        socket.on("getOnlineUsers", (res) => {
+            setOnlineUsers(res);
+        })
+    }, [socket]);
+
+    // receive message
+    useEffect(() => {
+        if (socket === null) return;
+        
+        socket.on("getMessage", res => {
+            if (user.id !== res.user_id2) return;
+
+            setMessages(prev => [...prev, res]);
+        })
+
+        return () => {
+            socket.off("getMessage");
+        }
+    }, [socket, currentChat]);
 
     const getUserChats = async() => {
         if (user?.id) {
@@ -49,6 +87,13 @@ export const ChatContextProvider = ({children, user}) => {
 
         if (response.error) 
             return setSendTextMessageError(response);
+
+        socket.emit("sendMessage", {
+            "user_id1": user?.id,
+            "user_id2": currentChat?.id,
+            "text": textMessage
+        });
+
         setMessages(prev => [...prev, response.data]);
         setTextMessage("");
     })
@@ -79,7 +124,8 @@ export const ChatContextProvider = ({children, user}) => {
             messages,
             isMessagesLoading,
             sendTextMessage,
-            getMessages
+            getMessages,
+            onlineUsers
         }}>{children}</ChatContext.Provider>
     )
 };

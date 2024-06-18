@@ -11,7 +11,7 @@ export default function ChatPage() {
     const {userChats, isUserChatsLoading, userChatsError, getUserChats, updateCurrentChat} = useContext(ChatContext);
 
     useEffect(() => {
-        getUserChats()
+        getUserChats();
     }, [user])
 
     return (

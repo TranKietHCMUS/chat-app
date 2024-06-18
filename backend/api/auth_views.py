@@ -18,14 +18,9 @@ class UserLogin(APIView):
         if not user.check_password(request.data['password']):
             return Response({'detail':'Wrong Password.'}, status=status.HTTP_401_UNAUTHORIZED)
 
-        check_online = (user.is_active == 1)
-        if (check_online):
-            return Response({'detail':'This account is being logged in elsewhere.'}, status=status.HTTP_401_UNAUTHORIZED)
-
         access_token = generateAccessToken(user)
         rf_token = generateRefreshToken(user)
 
-        user.is_active = 1
         user.refresh_token = rf_token
         user.save()
 
@@ -68,7 +63,6 @@ class UserLogout(APIView):
             response = Response()
 
             user = CustomUser.objects.filter(id=request.query_params['user_id']).first()
-            user.is_active = 0
             user.refresh_token = ""
             user.save()
 
