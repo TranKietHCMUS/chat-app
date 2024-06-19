@@ -26,7 +26,7 @@ class UserLogin(APIView):
 
         response = Response({'detail': 'success!'}, status=status.HTTP_200_OK)
         response.set_cookie(key='refreshToken', value=rf_token, httponly=True, path='/', 
-                            samesite='strict', secure=False)
+                            samesite='strict', secure=False, max_age=86400)
 
         serializer = UserSerializer(instance=user)
 
