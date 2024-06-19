@@ -209,3 +209,21 @@ body {
   align-items: center;
   justify-content: center;
 }
+
+::-webkit-scrollbar {
+  width: 10px; /* Chiều rộng của thanh cuộn */
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1; /* Màu nền của thanh trượt */
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888; /* Màu của thanh kéo */
+  border-radius: 4px; /* Bo tròn các góc của thanh kéo */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555; /* Màu của thanh kéo khi di chuột qua */
+}

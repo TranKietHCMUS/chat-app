@@ -43,3 +43,17 @@ class FindUserChats(APIView):
         users = CustomUser.objects.exclude(id=request.query_params.get('user_id'))
         serializer = UserSerializer(instance=users, many=True)
         return Response({'user_chats': serializer.data}, status=status.HTTP_200_OK)
+
+class GetLatestMessage(APIView):
+    def get(self, request):
+        res = checkToken(request)
+        if (res != 1):
+            return res
+        try:
+            user1 = request.query_params.get('user_id1')
+            user2 = request.query_params.get('user_id2')
+            message = Chat.objects.filter((Q(user_id1=user1) & Q(user_id2=user2)) | (Q(user_id1=user2) & Q(user_id2=user1))).last()
+            serializer = ChatSerializer(instance=message)
+            return Response({'data': serializer.data}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

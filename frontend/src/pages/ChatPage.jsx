@@ -28,7 +28,7 @@ export default function ChatPage() {
                         )
                     })}
                 </Stack>
-                <ChatBox />
+                <ChatBox/>
             </Stack>)}
         </Container>    
     );

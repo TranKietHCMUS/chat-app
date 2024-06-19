@@ -2,6 +2,7 @@ import {Container, Nav, Navbar, Stack} from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { useContext, useState } from 'react';
 import { AuthContext } from '../context/AuthContext';
+import Notification from './Chat/Notification';
 
 export default function NavigationBar() {
     const [isLoginHover, setIsLoginHover] = useState(false);
@@ -30,12 +31,15 @@ export default function NavigationBar() {
                 <Nav>
                     <Stack direction="horizontal" gap="3">
                         {user && (
-                            <Link to="/login" onClick={() => logoutUser()} 
-                                className='text-decoration-none'
-                                style={{color:logoutColor}}
-                                onPointerEnter={() => setIsLogoutHover(true)}
-                                onPointerLeave={() => setIsLogoutHover(false)}
-                            >Logout</Link>
+                            <>
+                                <Notification />
+                                <Link to="/login" onClick={() => logoutUser()} 
+                                    className='text-decoration-none'
+                                    style={{color:logoutColor}}
+                                    onPointerEnter={() => setIsLogoutHover(true)}
+                                    onPointerLeave={() => setIsLogoutHover(false)}
+                                >Logout</Link>
+                            </>
                         )}
                         {!user && (
                             <>

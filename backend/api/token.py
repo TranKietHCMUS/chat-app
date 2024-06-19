@@ -24,7 +24,7 @@ def generateRefreshToken(user):
     refresh_payload = {
         'user_id': user.id,
         'is_superuser': user.is_superuser,
-        'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=86400),
+        'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=14400),
         'iat': datetime.datetime.utcnow()
     }
 
