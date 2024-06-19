@@ -12,7 +12,7 @@ const UserChat = ({chat, user}) => {
     const unreadNotifications = unreadNotificationsFunc(notifications);
     const [latestMessage, setLatestMessage] = useState({});
     const thisUserNotifications = unreadNotifications?.filter(
-        n => n.senderId == chat?.id
+        n => n?.senderId === chat?.id
     );
 
     useEffect(() => {
@@ -59,7 +59,7 @@ const UserChat = ({chat, user}) => {
                 </div>
                 <div className="d-flex flex-column align-items-end">
                     <div className="date">
-                        {moment(latestMessage?.time).calendar()}
+                        {latestMessage?.text !== "" && moment(latestMessage?.time).calendar()}
                     </div>
                     <div className={thisUserNotifications.length > 0 && "this-user-notifications"}>{thisUserNotifications?.length > 0 && thisUserNotifications.length}</div>
                     {onlineUsers?.some((u) => u?.userId === chat?.id) && <span className="user-online"></span>}

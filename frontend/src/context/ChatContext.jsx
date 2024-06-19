@@ -18,6 +18,8 @@ export const ChatContextProvider = ({children, user}) => {
     const [notifications, setNotifications] = useState([]);
     const [newMessages, setNewMessages] = useState([]);
 
+    console.log(notifications);
+
     // connect
     useEffect(() => {
         if (!user) return;
@@ -115,6 +117,7 @@ export const ChatContextProvider = ({children, user}) => {
 
     const markThisUserNotificationsAsRead = useCallback(
         (thisUserNotifications, notifications) => {
+            if (thisUserNotifications?.length === 0) return;
             const mNotifications = notifications.map((el) => {
                 let notification;
                 thisUserNotifications.forEach((n) => {
