@@ -9,4 +9,5 @@ urlpatterns = [
     path('user/refresh/', user_views.RefreshToken.as_view(), name='refresh-token'),
     path('chat/messages/', chat_views.Messages.as_view(), name='messages'),
     path('chat/finduserchats/', chat_views.FindUserChats.as_view(), name='find-user-chats'),
+    path('chat/getlatestmessage/', chat_views.GetLatestMessage.as_view(), name='get-latest-message')
 ]
