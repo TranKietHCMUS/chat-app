@@ -108,7 +108,7 @@ export const ChatContextProvider = ({children, user}) => {
             }
         });
 
-        updateCurrentChat({
+        setCurrentChat({
             'id': desiredChat?.id,
             'name': desiredChat?.first_name + " " + desiredChat?.last_name
         });
